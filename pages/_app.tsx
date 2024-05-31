@@ -7,6 +7,7 @@ import { config } from "@/config/chains";
 import { fonts } from "@/config/fonts";
 import { Navbar } from "@/components/Navbar";
 import { ChakraProvider } from "@chakra-ui/react";
+import { theme } from "@/styles/theme";
 
 import "@/styles/globals.css";
 import "@rainbow-me/rainbowkit/styles.css";
@@ -18,8 +19,8 @@ function MyApp({ Component, pageProps }: AppProps) {
         <WagmiProvider config={config}>
             <QueryClientProvider client={client}>
                 <RainbowKitProvider modalSize="compact" coolMode>
-                    <ChakraProvider>
-                        <main className={fonts.rubik.className}>
+                    <ChakraProvider theme={theme}>
+                        <main className={fonts.vt323.className}>
                             <Navbar />
                             <Component {...pageProps} />
                         </main>

@@ -1,6 +1,7 @@
 // @see https://www.rainbowkit.com/docs/custom-connect-button
-import { Button, Image } from "@chakra-ui/react";
+import { Button, Box } from "@chakra-ui/react";
 import { ConnectButton as ConnectButtonRK } from "@rainbow-me/rainbowkit";
+import Image from "next/image";
 
 export const ConnectButton = () => {
     return (
@@ -22,22 +23,57 @@ export const ConnectButton = () => {
                         {(() => {
                             if (!connected) {
                                 return (
-                                    <Button variant="outline" size="sm" onClick={openConnectModal}>
+                                    <Button
+                                        colorScheme="green"
+                                        variant="outline"
+                                        size="md"
+                                        sx={{
+                                            ":hover": {
+                                                bg: "brand.900",
+                                                color: "darkGreen",
+                                            },
+                                        }}
+                                        onClick={openConnectModal}
+                                    >
                                         Connect
                                     </Button>
                                 );
                             }
                             if (chain.unsupported) {
                                 return (
-                                    <Button variant="outline" size="sm" onClick={openChainModal}>
+                                    <Button
+                                        colorScheme="green"
+                                        variant="outline"
+                                        size="md"
+                                        sx={{
+                                            ":hover": {
+                                                bg: "brand.900",
+                                                color: "darkGreen",
+                                            },
+                                        }}
+                                        onClick={openChainModal}
+                                    >
                                         Wrong network
                                     </Button>
                                 );
                             }
                             return (
                                 <div style={{ display: "flex", gap: 12 }}>
-                                    <Button variant="ghost" size="sm" onClick={openAccountModal}>
-                                        <Image alt="ENS Avatar" width="28px" height="28px" src={account.ensAvatar as string} borderRadius="full" mr={2}></Image>
+                                    <Button
+                                        colorScheme="green"
+                                        variant="outline"
+                                        size="md"
+                                        sx={{
+                                            ":hover": {
+                                                bg: "brand.900",
+                                                color: "darkGreen",
+                                            },
+                                        }}
+                                        onClick={openAccountModal}
+                                    >
+                                        <Box borderRadius="full" mr={2} overflow="hidden">
+                                            <Image alt="ENS Avatar" width={28} height={28} src={account.ensAvatar as string}></Image>
+                                        </Box>
                                         {account.displayName}
                                     </Button>
                                 </div>
