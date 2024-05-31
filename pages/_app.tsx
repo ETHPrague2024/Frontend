@@ -17,7 +17,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     return (
         <WagmiProvider config={config}>
             <QueryClientProvider client={client}>
-                <RainbowKitProvider>
+                <RainbowKitProvider modalSize="compact" coolMode>
                     <ChakraProvider>
                         <main className={fonts.rubik.className}>
                             <Navbar />
