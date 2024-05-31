@@ -7,27 +7,27 @@ import { config } from "@/config/chains";
 import { fonts } from "@/config/fonts";
 import { Navbar } from "@/components/Navbar";
 import { ChakraProvider } from "@chakra-ui/react";
+import { AuthProvider } from "@/lib/AuthProvider";
 
 import "@/styles/globals.css";
 import "@rainbow-me/rainbowkit/styles.css";
 
-const client = new QueryClient();
+const queryClient = new QueryClient();
 
-function MyApp({ Component, pageProps }: AppProps) {
+function App({ Component, pageProps }: AppProps) {
     return (
         <WagmiProvider config={config}>
-            <QueryClientProvider client={client}>
-                <RainbowKitProvider>
-                    <ChakraProvider>
-                        <main className={fonts.rubik.className}>
-                            <Navbar />
+            <QueryClientProvider client={queryClient}>
+                <AuthProvider>
+                    <RainbowKitProvider modalSize="compact" coolMode>
+                        <ChakraProvider>
                             <Component {...pageProps} />
-                        </main>
-                    </ChakraProvider>
-                </RainbowKitProvider>
+                        </ChakraProvider>
+                    </RainbowKitProvider>
+                </AuthProvider>
             </QueryClientProvider>
         </WagmiProvider>
     );
 }
 
-export default MyApp;
+export default App;
