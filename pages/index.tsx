@@ -1,5 +1,6 @@
 import type { NextPage } from "next";
 import Head from "next/head";
+import { Loans } from "@/components/Loans";
 
 const Home: NextPage = () => {
     return (
@@ -11,7 +12,7 @@ const Home: NextPage = () => {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <main>
-                <h1>ETH Prague 2024</h1>
+                <Loans></Loans>
             </main>
         </>
     );
