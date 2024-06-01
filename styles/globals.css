@@ -14,3 +14,40 @@ a {
 * {
   box-sizing: border-box;
 }
+
+/* styles.css or metrics.module.css */
+
+.metrics-container {
+  border: 1px solid #ccc;
+  padding: 20px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-color: #1c1c1c; /* Matching dark background */
+  color: #ffffff; /* Text color to white */
+}
+
+.metric-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #2b2b2b; /* Darker background for each item */
+  border-radius: 5px;
+}
+
+.metric-item h3 {
+  font-size: 1.2em;
+  margin: 0;
+}
+
+.metric-item p {
+  font-size: 1.2em;
+  margin: 0;
+}
+
+.error-message, .loading-message {
+  color: #ff4d4d; /* Red color for error and loading messages */
+  text-align: center;
+}

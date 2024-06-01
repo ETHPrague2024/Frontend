@@ -21,6 +21,7 @@ interface LoanDisplay {
     duration: number;
     network: string;
     borrower: string; // Added borrower field
+    pd: number; // Added PD field
 }
 
 type SortConfig = {
@@ -29,7 +30,7 @@ type SortConfig = {
 };
 
 interface LoansComponentProps {
-    address?: string;
+    address?: string; // Added address prop
 }
 
 export const LoansComponent = ({ address }: LoansComponentProps) => {
@@ -38,10 +39,19 @@ export const LoansComponent = ({ address }: LoansComponentProps) => {
 
     useEffect(() => {
         const fetchLoans = async () => {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}api/processLoans`);
-            const data = await response.json();
+            const [loansResponse, pdResponse] = await Promise.all([
+                fetch("/api/processLoans"),
+                fetch("/api/calculatedPD")
+            ]);
+            const loansData = await loansResponse.json();
+            const pdData = await pdResponse.json();
 
-            const filteredData = data.filter((loan: any) => loan.type === "NewLoanAdvertised");
+            const pdMap = pdData.reduce((map, pdItem) => {
+                map[pdItem.loanID] = pdItem.pd;
+                return map;
+            }, {});
+
+            const filteredData = loansData.filter((loan: any) => loan.type === "NewLoanAdvertised");
 
             const mappedData = filteredData.map(async (loan: any) => {
                 const dateFromBlock = await getDateFromBlockNumber(loan.blockNumber);
@@ -49,25 +59,27 @@ export const LoansComponent = ({ address }: LoansComponentProps) => {
                 return {
                     loanID: loan.loanID,
                     creationDate: formatDate(dateFromBlock as Date),
-                    collateralImage: loan.collateralDetails.thumbnail_url,
-                    collateralName: loan.collateralDetails.name,
-                    collateralSymbol: loan.collateralDetails.symbol,
-                    collateralAmount: loan.tokenCollateralAmount / Math.pow(10, loan.collateralDetails.decimals),
-                    appraisal: Math.random() * 1000 + loan.tokenCollateralAmount / Math.pow(10, loan.collateralDetails.decimals), // Random appraisal
-                    borrowAmount: loan.tokenLoanAmount / Math.pow(10, loan.collateralDetails.decimals),
-                    borrowLoanName: loan.loanDetails.name,
-                    borrowLoanSymbol: loan.loanDetails.symbol,
+                    collateralImage: loan.collateralDetails?.thumbnail_url || "",
+                    collateralName: loan.collateralDetails?.name || "Unknown",
+                    collateralSymbol: loan.collateralDetails?.symbol || "Unknown",
+                    collateralAmount: loan.tokenCollateralAmount / Math.pow(10, loan.collateralDetails?.decimals || 18),
+                    appraisal: Math.random() * 1000 + loan.tokenCollateralAmount / Math.pow(10, loan.collateralDetails?.decimals || 18), // Random appraisal
+                    borrowAmount: loan.tokenLoanAmount / Math.pow(10, loan.collateralDetails?.decimals || 18),
+                    borrowLoanName: loan.loanDetails?.name || "Unknown",
+                    borrowLoanSymbol: loan.loanDetails?.symbol || "Unknown",
                     apr: 5, // Placeholder APR
                     ltv: 70, // Placeholder LTV
                     duration: (loan.durationOfLoanSeconds / 86400).toFixed(),
                     network: networkName,
-                    borrower: loan.borrowerAddress, // Added borrower field
+                    borrower: loan.borrower, // Added borrower field
+                    pd: pdMap[loan.loanID] || 0 // Added PD field
                 };
             });
 
-            const loansData = await Promise.all(mappedData);
+            const loansDataWithPD = await Promise.all(mappedData);
+
             // Apply address filter if address prop is provided
-            const filteredLoans = address ? loansData.filter((loan) => loan.borrower.toLowerCase() === address.toLowerCase()) : loansData;
+            const filteredLoans = address ? loansDataWithPD.filter((loan) => loan.borrower.toLowerCase() === address.toLowerCase()) : loansDataWithPD;
             setLoans(filteredLoans);
         };
         fetchLoans();
@@ -104,6 +116,7 @@ export const LoansComponent = ({ address }: LoansComponentProps) => {
                         <Th onClick={() => sortLoans("ltv")}>LTV {sortConfig.key === "ltv" ? (sortConfig.direction === "ascending" ? "↓" : "↑") : ""}</Th>
                         <Th onClick={() => sortLoans("duration")}>Duration {sortConfig.key === "duration" ? (sortConfig.direction === "ascending" ? "↓" : "↑") : ""}</Th>
                         <Th onClick={() => sortLoans("network")}>Network {sortConfig.key === "network" ? (sortConfig.direction === "ascending" ? "↓" : "↑") : ""}</Th>
+                        <Th onClick={() => sortLoans("pd")}>PD {sortConfig.key === "pd" ? (sortConfig.direction === "ascending" ? "↓" : "↑") : ""}</Th>
                         <Th></Th>
                     </Tr>
                 </Thead>
@@ -130,6 +143,7 @@ export const LoansComponent = ({ address }: LoansComponentProps) => {
                             <Td>{loan.ltv}%</Td>
                             <Td>{loan.duration} days</Td>
                             <Td>{loan.network}</Td>
+                            <Td>{loan.pd.toFixed(2)}%</Td>
                             <Td isNumeric>
                                 <Link href={`/fundLoan/${loan.loanID}`}>
                                     <Button colorScheme="teal" size="md">
