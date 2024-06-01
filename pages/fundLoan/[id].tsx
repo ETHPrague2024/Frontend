@@ -105,9 +105,9 @@ const LoanDetails: NextPage = () => {
                                         (1% APR)
                                     </Text>
                                 </Text>
-                                <Button colorScheme="teal" size="md" w="full">
+                                {/* <Button colorScheme="teal" size="md" w="full">
                                     Fund Loan
-                                </Button>
+                                </Button> */}
                             </VStack>
                         </Flex>
                     </Flex>
