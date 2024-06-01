@@ -1,7 +1,8 @@
 import { NextPage } from "next";
 import Head from "next/head";
-import { ActiveLoansComponent } from "@/components/ActiveLoansComponent";
+import { ActiveLoansRealComponent } from "@/components/ActiveLoansRealComponent";
 import { Text, Flex } from "@chakra-ui/react";
+import Metrics from "@/components/Metrics";
 
 const ActiveList: NextPage = () => {
     return (
@@ -18,7 +19,8 @@ const ActiveList: NextPage = () => {
                         <Text fontSize="5xl" fontWeight="bold" mb={6} color="teal.200">
                             Active Loans [MainNet]
                         </Text>
-                        <ActiveLoansComponent />
+                        <Metrics /> 
+                        <ActiveLoansRealComponent />
                     </Flex>
                 </Flex>
             </main>
