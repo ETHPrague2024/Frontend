@@ -1,4 +1,4 @@
-export function formatDate(isoString: string) {
+export function formatDate(isoString: Date) {
     const date = new Date(isoString);
 
     const month = date.getMonth() + 1;

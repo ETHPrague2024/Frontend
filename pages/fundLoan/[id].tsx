@@ -12,7 +12,6 @@ import { formatAddress } from "@/utilities/formatAddress";
 
 import { getDateFromBlockNumber } from "@/utilities/getDateFromBlockNumber";
 import { formatDate } from "@/utilities/formatDate";
-import { getLTV } from "@/utilities/getLTV";
 
 type LoanDetailsType = {
     borrowerAddress: string;
@@ -35,12 +34,14 @@ const LoanDetails: NextPage = () => {
     const { id } = router.query;
 
     const { address } = useAccount();
+
     const [loanDetails, setLoanDetails] = useState<LoanDetailsType | null>(null);
     const [networkName, setNetworkName] = useState<string | null>(null);
     const [secondsToDays, setSecondsToDays] = useState<string | null>(null);
     const [randomAssetValue, setRandomAssetValue] = useState<number | null>(null);
     const [loanCreated, setLoanCreated] = useState<string | null>(null);
     const [ltv, setLTV] = useState<string | null>(null);
+    const [endDate, setEndDate] = useState<string | null>(null);
 
     useEffect(() => {
         if (id) {
@@ -69,7 +70,8 @@ const LoanDetails: NextPage = () => {
         async function getRandomAssetValueAndLTV() {
             if (loanDetails) {
                 const randomValue = Math.floor(Math.random() * 91) + 10;
-                setRandomAssetValue(randomValue * loanDetails.tokenCollateralAmount);
+                const randomValueBigNumber = randomValue * loanDetails.tokenCollateralAmount;
+                setRandomAssetValue(randomValueBigNumber / 1e18);
 
                 const randomValueLTV = Math.floor(Math.random() * (70 - 15 + 1) + 15);
                 setLTV(randomValueLTV.toFixed(2));
@@ -84,13 +86,21 @@ const LoanDetails: NextPage = () => {
             }
         }
 
+        async function getEndDate() {
+            if (loanDetails) {
+                const endDate = new Date();
+                endDate.setDate(endDate.getDate() + parseInt(secondsToDays as string));
+                setEndDate(endDate.toDateString());
+            }
+        }
+
         fetchNetworkName();
         convertSecondsToDays();
         getRandomAssetValueAndLTV();
         getLoanCreatedDate();
-    }, [loanDetails]);
+        getEndDate();
+    }, [loanDetails, secondsToDays]);
 
-    console.log(loanDetails);
     return (
         <>
             <Head>
@@ -129,10 +139,10 @@ const LoanDetails: NextPage = () => {
                                         </Box>
                                         <Box ml={4}>
                                             <Text fontSize="xl" fontWeight="bold">
-                                                {loanDetails?.tokenCollateralAmount} {loanDetails?.collateralDetails?.symbol}
+                                                {loanDetails ? loanDetails.tokenCollateralAmount / 1e18 + " " + loanDetails.collateralDetails.symbol : ""}
                                             </Text>
                                             <Text fontSize="sm">
-                                                <Link href="https://etherscan.io/" target="blank">
+                                                <Link href="https://sepolia.etherscan.io/address/0x2b40c96d55e32B94cD5DcD112eE07FAbd4D1419F" target="blank">
                                                     {loanDetails?.tokenCollateralAddress}
                                                 </Link>
                                             </Text>
@@ -163,7 +173,7 @@ const LoanDetails: NextPage = () => {
                                         <VStack align="start">
                                             <Text>Expires in</Text>
                                             <Text fontSize="2xl" fontWeight="bold">
-                                                5 Days
+                                                {/* TODO: Get expiring days from new contract */}5 Days
                                             </Text>
                                         </VStack>
                                     </HStack>
@@ -171,7 +181,7 @@ const LoanDetails: NextPage = () => {
                                         <VStack align="start">
                                             <Text>Wants to borrow</Text>
                                             <Text fontSize="2xl" fontWeight="bold">
-                                                {loanDetails?.tokenLoanAmount} {loanDetails?.loanDetails?.symbol}
+                                                {loanDetails ? loanDetails.tokenLoanAmount / 1e18 + " " + loanDetails.loanDetails.symbol : ""}
                                             </Text>
                                         </VStack>
                                         <VStack align="start">
@@ -183,10 +193,10 @@ const LoanDetails: NextPage = () => {
                                     </HStack>
                                     <Text>Wants to repay</Text>
                                     <Text fontSize="2xl" fontWeight="bold">
-                                        {loanDetails?.tokenLoanRepaymentAmount} {loanDetails?.loanDetails?.symbol}{" "}
-                                        <Text as="span" color="gray.500">
+                                        {loanDetails ? loanDetails.tokenLoanRepaymentAmount / 1e18 + " " + loanDetails.loanDetails.symbol : ""}
+                                        {/* <Text as="span" color="gray.500">
                                             (1% APR)
-                                        </Text>
+                                        </Text> */}
                                     </Text>
                                     {/* <Button colorScheme="teal" size="md" w="full">
                                     Fund Loan

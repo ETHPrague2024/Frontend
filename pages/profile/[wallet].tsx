@@ -8,6 +8,7 @@ import { ethers } from "ethers";
 import { ActiveLoansComponent } from "@/components/ActiveLoansComponent";
 import { RequestedLoansComponent } from "@/components/RequestedLoansComponent";
 import { formatAddress } from "@/utilities/formatAddress";
+import { LoansComponent } from "@/components/LoansComponent";
 
 const LoanDetails: NextPage = () => {
     const router = useRouter();
@@ -49,7 +50,7 @@ const LoanDetails: NextPage = () => {
                         <Text fontSize="5xl" fontWeight="bold" mb={6} color="teal.200">
                             My Requested Loans
                         </Text>
-                        <RequestedLoansComponent address={address} />
+                        <LoansComponent address={address} />
                     </Flex>
                 </Flex>
             </main>

@@ -126,7 +126,7 @@ export const RequestedLoansComponent: NextPage<RequestedLoansComponentProps> = (
                         <Td isNumeric>
                             <Link href={`/fundLoan/${loan.id}`}>
                                 <Button colorScheme="teal" size="md">
-                                    Details
+                                    Loan Details
                                 </Button>
                             </Link>
                         </Td>

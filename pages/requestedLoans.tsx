@@ -2,6 +2,7 @@ import { Flex, Text } from "@chakra-ui/react";
 import { NextPage } from "next";
 import Head from "next/head";
 import { RequestedLoansComponent } from "@/components/RequestedLoansComponent";
+import { LoansComponent } from "@/components/LoansComponent";
 
 const LoansList: NextPage = () => {
     return (
@@ -17,7 +18,7 @@ const LoansList: NextPage = () => {
                     <Text fontSize="5xl" fontWeight="bold" mb={6} color="teal.200">
                         Requested Loans [TestNet]
                     </Text>
-                    <RequestedLoansComponent />
+                    <LoansComponent />
                 </Flex>
             </Flex>
         </>

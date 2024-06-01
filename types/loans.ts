@@ -4,18 +4,15 @@ export interface EventBase {
 
 export interface NewLoanAdvertisedEvent extends EventBase {
     type: "NewLoanAdvertised";
-    borrowerAddress: string;
     loanID: number;
-    chainIdLoan: number;
+    chainId: number;
     tokenCollateralAddress: string;
     tokenCollateralAmount: number;
     tokenCollateralIndex: number;
     tokenLoanAddress: string;
     tokenLoanAmount: number;
     tokenLoanIndex: number;
-    tokenLoanRepaymentAmount: number;
     durationOfLoanSeconds: number;
-    blockNumber: number;
 }
 
 export interface LoanFilledEvent extends EventBase {
@@ -81,3 +78,19 @@ export interface Loan {
     loanType: string;
     durationOfLoanSeconds: number;
 }
+
+export type LoanDetailsType = {
+    borrowerAddress: string;
+    chainIdLoan: string;
+    tokenCollateralAddress: string;
+    tokenCollateralAmount: number;
+    tokenCollateralIndex: number;
+    collateralDetails: any;
+    tokenLoanAddress: string;
+    tokenLoanAmount: number;
+    tokenLoanIndex: number;
+    tokenLoanRepaymentAmount: number;
+    durationOfLoanSeconds: number;
+    loanDetails: any;
+    blockNumber: number;
+};
