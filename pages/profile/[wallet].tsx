@@ -37,14 +37,14 @@ const LoanDetails: NextPage = () => {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <main>
-                <Flex bg="gray.900" color="white" align="start" justify="center" p={10}>
+                {/* <Flex bg="gray.900" color="white" align="start" justify="center" p={10}>
                     <Flex direction="column" w="full" maxW="7xl">
                         <Text fontSize="5xl" fontWeight="bold" mb={6} color="teal.200">
                             My Active Loans
                         </Text>
                         <ActiveLoansComponent address={address} />
                     </Flex>
-                </Flex>
+                </Flex> */}
                 <Flex bg="gray.900" color="white" minH="100vh" align="start" justify="center" p={10}>
                     <Flex direction="column" w="full" maxW="7xl">
                         <Text fontSize="5xl" fontWeight="bold" mb={6} color="teal.200">

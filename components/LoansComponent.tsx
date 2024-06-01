@@ -28,7 +28,7 @@ type SortConfig = {
 };
 
 interface LoansComponentProps {
-    address?: string; // Added address prop
+    address?: string;
 }
 
 export const LoansComponent = ({ address }: LoansComponentProps) => {
@@ -37,7 +37,7 @@ export const LoansComponent = ({ address }: LoansComponentProps) => {
 
     useEffect(() => {
         const fetchLoans = async () => {
-            const response = await fetch("api/processLoans");
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}api/processLoans`);
             const data = await response.json();
 
             const filteredData = data.filter((loan: any) => loan.type === "NewLoanAdvertised");
@@ -60,12 +60,11 @@ export const LoansComponent = ({ address }: LoansComponentProps) => {
                     ltv: 70, // Placeholder LTV
                     duration: loan.durationOfLoanSeconds / 86400,
                     network: networkName,
-                    borrower: loan.borrower, // Added borrower field
+                    borrower: loan.borrowerAddress, // Added borrower field
                 };
             });
 
             const loansData = await Promise.all(mappedData);
-
             // Apply address filter if address prop is provided
             const filteredLoans = address ? loansData.filter((loan) => loan.borrower.toLowerCase() === address.toLowerCase()) : loansData;
             setLoans(filteredLoans);
