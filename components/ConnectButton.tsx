@@ -24,13 +24,13 @@ export const ConnectButton = () => {
                             if (!connected) {
                                 return (
                                     <Button
-                                        colorScheme="green"
+                                        colorScheme="teal"
                                         variant="outline"
                                         size="md"
                                         sx={{
                                             ":hover": {
                                                 bg: "brand.900",
-                                                color: "darkGreen",
+                                                color: "teal.300",
                                             },
                                         }}
                                         onClick={openConnectModal}
@@ -42,13 +42,13 @@ export const ConnectButton = () => {
                             if (chain.unsupported) {
                                 return (
                                     <Button
-                                        colorScheme="green"
+                                        colorScheme="teal"
                                         variant="outline"
                                         size="md"
                                         sx={{
                                             ":hover": {
                                                 bg: "brand.900",
-                                                color: "darkGreen",
+                                                color: "teal.300",
                                             },
                                         }}
                                         onClick={openChainModal}
@@ -60,13 +60,13 @@ export const ConnectButton = () => {
                             return (
                                 <div style={{ display: "flex", gap: 12 }}>
                                     <Button
-                                        colorScheme="green"
+                                        colorScheme="teal"
                                         variant="outline"
                                         size="md"
                                         sx={{
                                             ":hover": {
                                                 bg: "brand.900",
-                                                color: "darkGreen",
+                                                color: "teal.300",
                                             },
                                         }}
                                         onClick={openAccountModal}
