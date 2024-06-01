@@ -1,17 +1,20 @@
 export const PWNLoanABI = [
+    { inputs: [], stateMutability: "nonpayable", type: "constructor" },
+    { anonymous: false, inputs: [{ indexed: false, internalType: "uint256", name: "loanId", type: "uint256" }], name: "LoanClaimed", type: "event" },
     { anonymous: false, inputs: [{ indexed: false, internalType: "uint256", name: "loanId", type: "uint256" }], name: "LoanFilled", type: "event" },
     { anonymous: false, inputs: [{ indexed: false, internalType: "uint256", name: "loanId", type: "uint256" }], name: "LoanOfferRevoked", type: "event" },
     {
         anonymous: false,
         inputs: [
             { indexed: false, internalType: "uint256", name: "loanID", type: "uint256" },
-            { indexed: false, internalType: "uint256", name: "chainId", type: "uint256" },
+            { indexed: false, internalType: "uint256", name: "chainIdLoan", type: "uint256" },
             { indexed: false, internalType: "address", name: "tokenCollateralAddress", type: "address" },
             { indexed: false, internalType: "uint256", name: "tokenCollateralAmount", type: "uint256" },
             { indexed: false, internalType: "uint256", name: "tokenCollateralIndex", type: "uint256" },
             { indexed: false, internalType: "address", name: "tokenLoanAddress", type: "address" },
             { indexed: false, internalType: "uint256", name: "tokenLoanAmount", type: "uint256" },
             { indexed: false, internalType: "uint256", name: "tokenLoanIndex", type: "uint256" },
+            { indexed: false, internalType: "uint256", name: "tokenLoanRepaymentAmount", type: "uint256" },
             { indexed: false, internalType: "uint256", name: "durationOfLoanSeconds", type: "uint256" },
         ],
         name: "NewLoanAdvertised",
@@ -25,8 +28,9 @@ export const PWNLoanABI = [
             { internalType: "address", name: "tokenLoanAddress", type: "address" },
             { internalType: "uint256", name: "tokenLoanAmount", type: "uint256" },
             { internalType: "uint256", name: "tokenLoanIndex", type: "uint256" },
+            { internalType: "uint256", name: "tokenLoanRepaymentAmount", type: "uint256" },
             { internalType: "uint256", name: "durationOfLoanSeconds", type: "uint256" },
-            { internalType: "uint256", name: "chainId", type: "uint256" },
+            { internalType: "uint256", name: "chainIdLoan", type: "uint256" },
             { internalType: "uint256", name: "loanId", type: "uint256" },
         ],
         name: "advertiseNewLoan",
@@ -36,12 +40,57 @@ export const PWNLoanABI = [
     },
     {
         inputs: [
-            { internalType: "uint256", name: "chainId", type: "uint256" },
+            { internalType: "uint256", name: "chainIdCollateral", type: "uint256" },
+            { internalType: "uint256", name: "chainIdLoan", type: "uint256" },
             { internalType: "uint256", name: "loanId", type: "uint256" },
+        ],
+        name: "claimLoan",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+    },
+    {
+        inputs: [
+            { internalType: "uint256", name: "chainIdCollateral", type: "uint256" },
+            { internalType: "uint256", name: "chainIdLoan", type: "uint256" },
+            { internalType: "uint256", name: "loanId", type: "uint256" },
+            { internalType: "bytes", name: "signature", type: "bytes" },
+            { internalType: "bytes", name: "loanTermsData", type: "bytes" },
         ],
         name: "fulfillLoan",
         outputs: [],
-        stateMutability: "nonpayable",
+        stateMutability: "payable",
+        type: "function",
+    },
+    {
+        inputs: [
+            { internalType: "uint256", name: "chainId", type: "uint256" },
+            { internalType: "uint256", name: "loanId", type: "uint256" },
+        ],
+        name: "getLoan",
+        outputs: [
+            {
+                components: [
+                    { internalType: "address", name: "tokenCollateralAddress", type: "address" },
+                    { internalType: "uint256", name: "tokenCollateralAmount", type: "uint256" },
+                    { internalType: "uint256", name: "tokenCollateralIndex", type: "uint256" },
+                    { internalType: "address", name: "tokenLoanAddress", type: "address" },
+                    { internalType: "uint256", name: "tokenLoanAmount", type: "uint256" },
+                    { internalType: "uint256", name: "tokenLoanIndex", type: "uint256" },
+                    { internalType: "uint256", name: "tokenLoanRepaymentAmount", type: "uint256" },
+                    { internalType: "uint256", name: "durationOfLoanSeconds", type: "uint256" },
+                    { internalType: "address", name: "advertiser", type: "address" },
+                    { internalType: "address", name: "filler", type: "address" },
+                    { internalType: "uint256", name: "chainIdLoan", type: "uint256" },
+                    { internalType: "uint256", name: "loanId", type: "uint256" },
+                    { internalType: "enum PWNLoan.LoanState", name: "state", type: "uint8" },
+                ],
+                internalType: "struct PWNLoan.Loan",
+                name: "",
+                type: "tuple",
+            },
+        ],
+        stateMutability: "view",
         type: "function",
     },
     {
@@ -54,9 +103,11 @@ export const PWNLoanABI = [
             { internalType: "address", name: "tokenLoanAddress", type: "address" },
             { internalType: "uint256", name: "tokenLoanAmount", type: "uint256" },
             { internalType: "uint256", name: "tokenLoanIndex", type: "uint256" },
+            { internalType: "uint256", name: "tokenLoanRepaymentAmount", type: "uint256" },
             { internalType: "uint256", name: "durationOfLoanSeconds", type: "uint256" },
             { internalType: "address", name: "advertiser", type: "address" },
-            { internalType: "uint256", name: "chainId", type: "uint256" },
+            { internalType: "address", name: "filler", type: "address" },
+            { internalType: "uint256", name: "chainIdLoan", type: "uint256" },
             { internalType: "uint256", name: "loanId", type: "uint256" },
             { internalType: "enum PWNLoan.LoanState", name: "state", type: "uint8" },
         ],
@@ -65,7 +116,20 @@ export const PWNLoanABI = [
     },
     {
         inputs: [
-            { internalType: "uint256", name: "chainId", type: "uint256" },
+            { internalType: "address", name: "operator", type: "address" },
+            { internalType: "address", name: "from", type: "address" },
+            { internalType: "uint256", name: "tokenId", type: "uint256" },
+            { internalType: "bytes", name: "data", type: "bytes" },
+        ],
+        name: "onERC721Received",
+        outputs: [{ internalType: "bytes4", name: "", type: "bytes4" }],
+        stateMutability: "nonpayable",
+        type: "function",
+    },
+    { inputs: [], name: "pwnSimpleLoan", outputs: [{ internalType: "contract IPWNSimpleLoan", name: "", type: "address" }], stateMutability: "view", type: "function" },
+    {
+        inputs: [
+            { internalType: "uint256", name: "chainIdCollateral", type: "uint256" },
             { internalType: "uint256", name: "loanId", type: "uint256" },
         ],
         name: "revokeLoanOffer",
@@ -75,4 +139,4 @@ export const PWNLoanABI = [
     },
 ];
 
-export const PWNLoanContract = "0x2b40c96d55e32B94cD5DcD112eE07FAbd4D1419F";
+export const PWNLoanContract = "0xb0c1b4715be387921B92bAa8D1bd9e6a99BB6FA1";
