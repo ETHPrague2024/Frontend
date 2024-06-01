@@ -6,6 +6,7 @@ export const PWNLoanABI = [
     {
         anonymous: false,
         inputs: [
+            { indexed: false, internalType: "address", name: "borrowerAddress", type: "address" },
             { indexed: false, internalType: "uint256", name: "loanID", type: "uint256" },
             { indexed: false, internalType: "uint256", name: "chainIdLoan", type: "uint256" },
             { indexed: false, internalType: "address", name: "tokenCollateralAddress", type: "address" },
@@ -22,6 +23,7 @@ export const PWNLoanABI = [
     },
     {
         inputs: [
+            { internalType: "address", name: "borrowerAddress", type: "address" },
             { internalType: "address", name: "tokenCollateralAddress", type: "address" },
             { internalType: "uint256", name: "tokenCollateralAmount", type: "uint256" },
             { internalType: "uint256", name: "tokenCollateralIndex", type: "uint256" },
@@ -139,4 +141,4 @@ export const PWNLoanABI = [
     },
 ];
 
-export const PWNLoanContract = "0xb0c1b4715be387921B92bAa8D1bd9e6a99BB6FA1";
+export const PWNLoanContract = "0x3c05f4027A670D82F3a372b77aBb01C2Be727332";

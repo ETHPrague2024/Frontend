@@ -14,6 +14,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
                     if (event.args) {
                         return {
                             type: "NewLoanAdvertised",
+                            borrowerAddress: event.args.borrowerAddress,
                             loanID: event.args.loanID,
                             chainId: event.args.chainId,
                             tokenCollateralAddress: event.args.tokenCollateralAddress,

@@ -4,6 +4,7 @@ export interface EventBase {
 
 export interface NewLoanAdvertisedEvent extends EventBase {
     type: "NewLoanAdvertised";
+    borrowerAddress: string;
     loanID: number;
     chainId: number;
     tokenCollateralAddress: string;
@@ -65,4 +66,16 @@ export interface RequestedSortConfig {
 export interface ActiveSortConfig {
     key: keyof activeLoans | null;
     direction: "ascending" | "descending";
+}
+
+export interface Loan {
+    type: string;
+    loanID: number;
+    tokenCollateralAddress: string;
+    tokenCollateralAmount: number;
+    collateralType: string;
+    tokenLoanAddress: string;
+    tokenLoanAmount: number;
+    loanType: string;
+    durationOfLoanSeconds: number;
 }

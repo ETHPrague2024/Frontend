@@ -65,16 +65,18 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
                 const convertedLoan = convertBigNumberFields(loan);
 
+                const chainId = 11155111;
+
                 if (convertedLoan.collateralType === "erc-20") {
-                    convertedLoan.collateralDetails = await fetchAssetDetails(convertedLoan.chainId, convertedLoan.tokenCollateralAddress);
+                    convertedLoan.collateralDetails = await fetchAssetDetails(chainId, convertedLoan.tokenCollateralAddress);
                 } else {
-                    convertedLoan.collateralDetails = await fetchAssetDetails(convertedLoan.chainId, convertedLoan.tokenCollateralAddress, convertedLoan.tokenCollateralIndex);
+                    convertedLoan.collateralDetails = await fetchAssetDetails(chainId, convertedLoan.tokenCollateralAddress, convertedLoan.tokenCollateralIndex);
                 }
 
                 if (convertedLoan.loanType === "erc-20") {
-                    convertedLoan.loanDetails = await fetchAssetDetails(convertedLoan.chainId, convertedLoan.tokenLoanAddress);
+                    convertedLoan.loanDetails = await fetchAssetDetails(chainId, convertedLoan.tokenLoanAddress);
                 } else {
-                    convertedLoan.loanDetails = await fetchAssetDetails(convertedLoan.chainId, convertedLoan.tokenLoanAddress, convertedLoan.tokenLoanIndex);
+                    convertedLoan.loanDetails = await fetchAssetDetails(chainId, convertedLoan.tokenLoanAddress, convertedLoan.tokenLoanIndex);
                 }
 
                 return convertedLoan;
