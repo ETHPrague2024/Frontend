@@ -26,3 +26,43 @@ export interface LoanOfferRevokedEvent extends EventBase {
 }
 
 export type LoanEvent = NewLoanAdvertisedEvent | LoanFilledEvent | LoanOfferRevokedEvent;
+
+export interface requestedLoans {
+    id: string;
+    collateralImage: string;
+    collateralName: string;
+    collateralAmount: number;
+    appraisal: number;
+    borrowName: string;
+    borrowAmount: number;
+    apr: number;
+    ltv: number;
+    duration: number;
+    network: string;
+    loanCreated: string;
+}
+
+export interface activeLoans {
+    id: string;
+    collateralImage: string;
+    collateralName: string;
+    collateralAmount: number;
+    appraisal: number;
+    borrowName: string;
+    borrowAmount: number;
+    apr: number;
+    ltv: number;
+    endsOn: string;
+    network: string;
+    loanCreated: string;
+}
+
+export interface RequestedSortConfig {
+    key: keyof requestedLoans | null;
+    direction: "ascending" | "descending";
+}
+
+export interface ActiveSortConfig {
+    key: keyof activeLoans | null;
+    direction: "ascending" | "descending";
+}
