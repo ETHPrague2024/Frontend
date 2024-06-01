@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { contract } from "@/utilities/contract";
 import { LoanEvent, NewLoanAdvertisedEvent, LoanFilledEvent, LoanOfferRevokedEvent } from "@/types/loans";
+import { getDateFromBlockNumber } from "@/utilities/getDateFromBlockNumber";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     try {
@@ -16,14 +17,16 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
                             type: "NewLoanAdvertised",
                             borrowerAddress: event.args.borrowerAddress,
                             loanID: event.args.loanID,
-                            chainId: event.args.chainId,
+                            chainIdLoan: event.args.chainIdLoan,
                             tokenCollateralAddress: event.args.tokenCollateralAddress,
                             tokenCollateralAmount: event.args.tokenCollateralAmount,
                             tokenCollateralIndex: event.args.tokenCollateralIndex,
                             tokenLoanAddress: event.args.tokenLoanAddress,
                             tokenLoanAmount: event.args.tokenLoanAmount,
                             tokenLoanIndex: event.args.tokenLoanIndex,
+                            tokenLoanRepaymentAmount: event.args.tokenLoanRepaymentAmount,
                             durationOfLoanSeconds: event.args.durationOfLoanSeconds,
+                            blockNumber: event.blockNumber,
                         } as NewLoanAdvertisedEvent;
                     }
                     return null;

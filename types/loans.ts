@@ -6,14 +6,16 @@ export interface NewLoanAdvertisedEvent extends EventBase {
     type: "NewLoanAdvertised";
     borrowerAddress: string;
     loanID: number;
-    chainId: number;
+    chainIdLoan: number;
     tokenCollateralAddress: string;
     tokenCollateralAmount: number;
     tokenCollateralIndex: number;
     tokenLoanAddress: string;
     tokenLoanAmount: number;
     tokenLoanIndex: number;
+    tokenLoanRepaymentAmount: number;
     durationOfLoanSeconds: number;
+    blockNumber: number;
 }
 
 export interface LoanFilledEvent extends EventBase {

@@ -7,17 +7,13 @@ import { useAccount, useEnsName } from "wagmi";
 import { ethers } from "ethers";
 import { ActiveLoansComponent } from "@/components/ActiveLoansComponent";
 import { RequestedLoansComponent } from "@/components/RequestedLoansComponent";
+import { formatAddress } from "@/utilities/formatAddress";
 
 const LoanDetails: NextPage = () => {
     const router = useRouter();
     const { wallet } = router.query;
     const { address } = useAccount();
     const { data: ensName, isLoading } = useEnsName({ address });
-
-    const formatAddress = (address: any) => {
-        if (!address) return "";
-        return `${address.substring(0, 5)}...${address.substring(address.length - 4)}`;
-    };
 
     const displayAddress = ensName || formatAddress(address);
 
