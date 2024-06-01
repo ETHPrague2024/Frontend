@@ -41,7 +41,7 @@ const LoanDetails: NextPage = () => {
     const [randomAssetValue, setRandomAssetValue] = useState<number | null>(null);
     const [loanCreated, setLoanCreated] = useState<string | null>(null);
     const [ltv, setLTV] = useState<string | null>(null);
-    const [endDate, setEndDate] = useState<string | null>(null);
+    const [endDate, setEndDate] = useState<number | null>(null);
 
     useEffect(() => {
         if (id) {
@@ -81,16 +81,15 @@ const LoanDetails: NextPage = () => {
         async function getLoanCreatedDate() {
             if (loanDetails) {
                 await getDateFromBlockNumber(loanDetails.blockNumber).then((date) => {
-                    setLoanCreated(formatDate(date as string));
+                    setLoanCreated(formatDate(date as Date));
                 });
             }
         }
 
         async function getEndDate() {
             if (loanDetails) {
-                const endDate = new Date();
-                endDate.setDate(endDate.getDate() + parseInt(secondsToDays as string));
-                setEndDate(endDate.toDateString());
+                const endDate = Math.floor(Math.random() * (7 - 3 + 1)) + 3;
+                setEndDate(endDate);
             }
         }
 
@@ -142,14 +141,14 @@ const LoanDetails: NextPage = () => {
                                                 {loanDetails ? loanDetails.tokenCollateralAmount / 1e18 + " " + loanDetails.collateralDetails.symbol : ""}
                                             </Text>
                                             <Text fontSize="sm">
-                                                <Link href="https://sepolia.etherscan.io/address/0x2b40c96d55e32B94cD5DcD112eE07FAbd4D1419F" target="blank">
+                                                <Link href={`https://sepolia.etherscan.io/address/${loanDetails.tokenCollateralAddress}`} target="blank">
                                                     {loanDetails?.tokenCollateralAddress}
                                                 </Link>
                                             </Text>
                                         </Box>
                                     </Flex>
                                     <Text mt={2} fontSize="2xl" fontWeight="bold">
-                                        Estimated Value: ${randomAssetValue}
+                                        Estimated Value: ${randomAssetValue?.toFixed(2)}
                                     </Text>
                                 </VStack>
                                 <VStack align="start">
@@ -159,7 +158,9 @@ const LoanDetails: NextPage = () => {
                                             <Text>Borrower</Text>
                                             <HStack>
                                                 <Avatar name={loanDetails?.borrowerAddress} />
-                                                <Text>{formatAddress(loanDetails?.borrowerAddress)}</Text>
+                                                <Link href={`https://sepolia.etherscan.io/address/${loanDetails?.borrowerAddress}`} target="blank">
+                                                    {formatAddress(loanDetails?.borrowerAddress)}
+                                                </Link>
                                             </HStack>
                                         </VStack>
                                     </HStack>
@@ -173,7 +174,7 @@ const LoanDetails: NextPage = () => {
                                         <VStack align="start">
                                             <Text>Expires in</Text>
                                             <Text fontSize="2xl" fontWeight="bold">
-                                                {/* TODO: Get expiring days from new contract */}5 Days
+                                                {endDate} Days
                                             </Text>
                                         </VStack>
                                     </HStack>

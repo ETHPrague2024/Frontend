@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { Box, Image, Table, Tbody, Td, Th, Thead, Tr, Flex, Text, Link, Button } from "@chakra-ui/react";
+import { Box, Image, Table, Tbody, Td, Th, Thead, Tr, Flex, Text, Button } from "@chakra-ui/react";
 import { getDateFromBlockNumber } from "@/utilities/getDateFromBlockNumber";
 import { formatDate } from "@/utilities/formatDate";
 import { getNetworkName } from "@/utilities/getNetworkName";
+import Link from "next/link";
 
 interface LoanDisplay {
     loanID: number;
@@ -58,7 +59,7 @@ export const LoansComponent = ({ address }: LoansComponentProps) => {
                     borrowLoanSymbol: loan.loanDetails.symbol,
                     apr: 5, // Placeholder APR
                     ltv: 70, // Placeholder LTV
-                    duration: loan.durationOfLoanSeconds / 86400,
+                    duration: (loan.durationOfLoanSeconds / 86400).toFixed(),
                     network: networkName,
                     borrower: loan.borrowerAddress, // Added borrower field
                 };

@@ -11,7 +11,9 @@ export const Navbar = () => {
         <Box bg="brand.900" px={4}>
             <Flex h={20} alignItems={"center"} justifyContent={"space-between"}>
                 <Stack direction={"row"} alignItems={"center"} spacing={4}>
-                    <Image src="https://placehold.jp/48x48.png" alt="Logo" width={48} height={48} />
+                    <Image src="/logo.png" alt="Logo" width={200} height={70} />
+                </Stack>
+                <Stack direction={"row"} alignItems={"center"} spacing={4}>
                     <Link href="/requestedLoans" color="white" fontSize="2xl" _hover={{ color: "teal.500", textDecoration: "underline" }}>
                         Requested Loans
                     </Link>
