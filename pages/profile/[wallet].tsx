@@ -20,12 +20,24 @@ const LoanDetails: NextPage = () => {
 
     if (!wallet || !ethers.utils.isAddress(wallet as string)) {
         console.error("Invalid or missing wallet address.");
-        return <p>Invalid or missing wallet address.</p>;
+        return (
+            <Flex bg="gray.900" color="white" minH="100vh" align="center" justify="start" p={10} direction="column">
+                <Text fontSize="5xl" fontWeight="bold" color="teal.200">
+                    Invalid or missing wallet address
+                </Text>
+            </Flex>
+        );
     }
 
     if (address !== wallet) {
         console.error("Unauthorized access to loan details.");
-        return <p>Unauthorized access to loan details.</p>;
+        return (
+            <Flex bg="gray.900" color="white" minH="100vh" align="center" justify="start" p={10} direction="column">
+                <Text fontSize="5xl" fontWeight="bold" color="teal.200">
+                    Unauthorized access to loan details.
+                </Text>
+            </Flex>
+        );
     }
 
     return (
