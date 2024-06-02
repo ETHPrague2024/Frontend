@@ -1,4 +1,4 @@
-import { Box, Flex, Text, Icon, Avatar, VStack, HStack, Button } from "@chakra-ui/react";
+import { Box, Flex, Text, Icon, Avatar, VStack, HStack, Button, Spinner } from "@chakra-ui/react";
 import { NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
@@ -124,7 +124,9 @@ const LoanDetails: NextPage = () => {
                         </Flex>
                     </Flex>
                 ) : (
-                    <Text>Loading...</Text>
+                    <Flex bg="gray.900" color="white" minH="100vh" align="center" justify="start" p={10} direction="column">
+                        <Spinner size="xl" color="teal.500" />
+                    </Flex>
                 )}
             </main>
         </>

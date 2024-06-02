@@ -1,4 +1,4 @@
-import { Box, Flex, Text, Icon, Avatar, VStack, HStack, Button } from "@chakra-ui/react";
+import { Box, Flex, Text, Icon, Avatar, VStack, HStack, Button, Spinner, Image } from "@chakra-ui/react";
 import { NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
@@ -71,10 +71,11 @@ const LoanDetails: NextPage = () => {
             if (loanDetails) {
                 const randomValue = Math.floor(Math.random() * 91) + 10;
                 const randomValueBigNumber = randomValue * loanDetails.tokenCollateralAmount;
-                setRandomAssetValue(randomValueBigNumber / 1e18);
+                const appraisedValue = randomValueBigNumber / 1e18;
+                setRandomAssetValue(appraisedValue);
 
-                const randomValueLTV = Math.floor(Math.random() * (70 - 15 + 1) + 15);
-                setLTV(randomValueLTV.toFixed(2));
+                const calculatedLTV = (loanDetails.tokenLoanAmount / 1e18 / appraisedValue) * 100;
+                setLTV(calculatedLTV.toFixed(2));
             }
         }
 
@@ -134,7 +135,7 @@ const LoanDetails: NextPage = () => {
                                     </Text>
                                     <Flex align="center">
                                         <Box bg="teal.500" p={4} borderRadius="full">
-                                            <Icon as={FaCheckCircle} boxSize={12} color="gray.900" />
+                                            <Image src={loanDetails?.collateralDetails.thumbnail_url} alt={loanDetails.collateralDetails.symbol}></Image>
                                         </Box>
                                         <Box ml={4}>
                                             <Text fontSize="xl" fontWeight="bold">
@@ -195,19 +196,15 @@ const LoanDetails: NextPage = () => {
                                     <Text>Wants to repay</Text>
                                     <Text fontSize="2xl" fontWeight="bold">
                                         {loanDetails ? loanDetails.tokenLoanRepaymentAmount / 1e18 + " " + loanDetails.loanDetails.symbol : ""}
-                                        {/* <Text as="span" color="gray.500">
-                                            (1% APR)
-                                        </Text> */}
                                     </Text>
-                                    {/* <Button colorScheme="teal" size="md" w="full">
-                                    Fund Loan
-                                </Button> */}
                                 </VStack>
                             </Flex>
                         </Flex>
                     </Flex>
                 ) : (
-                    <Text>Loading...</Text>
+                    <Flex bg="gray.900" color="white" minH="100vh" align="center" justify="start" p={10} direction="column">
+                        <Spinner size="xl" color="teal.500" />
+                    </Flex>
                 )}
             </main>
         </>

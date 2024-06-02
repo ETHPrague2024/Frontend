@@ -36,8 +36,8 @@ const Metrics: React.FC = () => {
 
     if (!metrics) {
         return (
-            <Flex justify="center" align="center" height="100vh">
-                <Spinner size="xl" color="teal.200" />
+            <Flex bg="gray.900" color="white" minH="100vh" align="center" justify="start" p={10} direction="column">
+                <Spinner size="xl" color="teal.500" />
             </Flex>
         );
     }

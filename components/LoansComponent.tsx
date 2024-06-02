@@ -54,20 +54,28 @@ export const LoansComponent: React.FC<LoansComponentProps> = ({ address }) => {
                 filteredData.map(async (loan: any) => {
                     const dateFromBlock = await getDateFromBlockNumber(loan.blockNumber);
                     const networkName = await getNetworkName(loan.chainIdLoan.toString());
+                    const collateralAmount = loan.tokenCollateralAmount / Math.pow(10, loan.collateralDetails?.decimals || 18);
+                    const borrowAmount = loan.tokenLoanAmount / Math.pow(10, loan.collateralDetails?.decimals || 18);
+                    const appraisal = Math.random() * 1000 + collateralAmount;
+                    const duration = loan.durationOfLoanSeconds / 86400;
+
+                    const apr = ((Math.pow(borrowAmount / collateralAmount, 365 / duration) - 1) * 100).toFixed(2);
+                    const ltv = ((borrowAmount / appraisal) * 100).toFixed(2);
+
                     return {
                         loanID: loan.loanID,
                         creationDate: formatDate(dateFromBlock as Date),
                         collateralImage: loan.collateralDetails?.thumbnail_url || "",
                         collateralName: loan.collateralDetails?.name || "Unknown",
                         collateralSymbol: loan.collateralDetails?.symbol || "Unknown",
-                        collateralAmount: loan.tokenCollateralAmount / Math.pow(10, loan.collateralDetails?.decimals || 18),
-                        appraisal: Math.random() * 1000 + loan.tokenCollateralAmount / Math.pow(10, loan.collateralDetails?.decimals || 18),
-                        borrowAmount: loan.tokenLoanAmount / Math.pow(10, loan.collateralDetails?.decimals || 18),
+                        collateralAmount: collateralAmount,
+                        appraisal: appraisal,
+                        borrowAmount: borrowAmount,
                         borrowLoanName: loan.loanDetails?.name || "Unknown",
                         borrowLoanSymbol: loan.loanDetails?.symbol || "Unknown",
-                        apr: 5,
-                        ltv: 70,
-                        duration: (loan.durationOfLoanSeconds / 86400).toFixed(),
+                        apr: parseFloat(apr),
+                        ltv: parseFloat(ltv),
+                        duration: duration.toFixed(),
                         network: networkName,
                         borrower: loan.borrowerAddress,
                         pd: pdMap[loan.loanID] || 0,
@@ -116,9 +124,9 @@ export const LoansComponent: React.FC<LoansComponentProps> = ({ address }) => {
                         <Th cursor="pointer" onClick={() => sortLoans("borrowAmount")}>
                             Borrow {sortConfig.key === "borrowAmount" ? (sortConfig.direction === "ascending" ? "↓" : "↑") : ""}
                         </Th>
-                        <Th cursor="pointer" onClick={() => sortLoans("apr")}>
+                        {/* <Th cursor="pointer" onClick={() => sortLoans("apr")}>
                             APR {sortConfig.key === "apr" ? (sortConfig.direction === "ascending" ? "↓" : "↑") : ""}
-                        </Th>
+                        </Th> */}
                         <Th cursor="pointer" onClick={() => sortLoans("ltv")}>
                             LTV {sortConfig.key === "ltv" ? (sortConfig.direction === "ascending" ? "↓" : "↑") : ""}
                         </Th>
@@ -153,11 +161,11 @@ export const LoansComponent: React.FC<LoansComponentProps> = ({ address }) => {
                             <Td>
                                 {loan.borrowAmount.toFixed(2)} {loan.borrowLoanSymbol}
                             </Td>
-                            <Td>{loan.apr}%</Td>
+                            {/* <Td>{loan.apr}%</Td> */}
                             <Td>{loan.ltv}%</Td>
                             <Td>{loan.pd.toFixed(2)}%</Td>
                             <Td>{loan.duration} days</Td>
-                            <Td>{loan.network}</Td>
+                            <Td>{loan.network.charAt(0).toUpperCase() + loan.network.slice(1)}</Td>
                             <Td isNumeric>
                                 <Link href={`/fundLoan/${loan.loanID}`}>
                                     <Button colorScheme="teal" size="md">
