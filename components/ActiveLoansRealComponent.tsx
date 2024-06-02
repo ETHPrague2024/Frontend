@@ -1,11 +1,24 @@
 import { useEffect, useState } from "react";
-import { Box, Table, Tbody, Td, Th, Thead, Tr, Flex, Text, Link, Button } from "@chakra-ui/react";
+import { Box, Table, Tbody, Td, Th, Thead, Tr, Flex, Text, Link, Button, Image } from "@chakra-ui/react";
+import { getDateFromBlockNumber } from "@/utilities/getDateFromBlockNumber";
+import { getNetworkName } from "@/utilities/getNetworkName";
+import { formatDate } from "@/utilities/formatDate";
 
 interface LoanDisplay {
     loanID: number;
+    creationDate: string;
+    collateralImage: string;
+    collateralName: string;
     collateralSymbol: string;
+    collateralAmount: number;
     appraisal: number;
     borrowAmount: number;
+    borrowLoanName: string;
+    borrowLoanSymbol: string;
+    ltv: number;
+    duration: number;
+    network: string;
+    borrower: string;
 }
 
 type SortConfig = {
@@ -27,15 +40,41 @@ export const ActiveLoansRealComponent = ({ address }: ActiveLoansRealComponentPr
                 const loansResponse = await fetch("/api/existedLoans");
                 const loansData = await loansResponse.json();
 
-                const mappedData = loansData.loanCreateds.map((loan: any) => ({
-                    loanID: loan.loanId,
-                    collateralSymbol: loan.terms_collateral_assetAddress,
-                    appraisal: parseFloat(loan.terms_collateral_amount),
-                    borrowAmount: parseFloat(loan.terms_asset_amount)
-                }));
+                console.log("Fetched loans data:", loansData);
 
-                const filteredLoans = address ? mappedData.filter((loan) => loan.borrower?.toLowerCase() === address.toLowerCase()) : mappedData;
-                setLoans(filteredLoans);
+                if (!loansData.loanCreateds || !Array.isArray(loansData.loanCreateds)) {
+                    throw new Error("Unexpected response format, expected an array of loanCreateds");
+                }
+
+                const mappedData = await Promise.all(
+                    loansData.loanCreateds.map(async (loan: any) => {
+                        if (!loan.moreInfo) return null;
+                        const collateralAmount = loan.terms_collateral_amount / Math.pow(10, loan.moreInfo.collateral?.decimals ?? 18);
+                        const borrowAmount = loan.terms_asset_amount / Math.pow(10, loan.moreInfo.desired_asset?.decimals ?? 18);
+                        const appraisal = Math.random() * 1000 + collateralAmount;
+                        const duration = loan.moreInfo.desired_duration / 86400;
+
+                        const ltv = ((borrowAmount / appraisal) * 100).toFixed(2);
+
+                        return {
+                            loanID: loan.loanId ?? 0,
+                            collateralImage: loan.moreInfo.collateral?.collection?.thumbnail_url ?? "https://api.pwn.xyz/static/default_asset_images/default_erc20_asset_image.svg",
+                            collateralName: loan.moreInfo.collateral?.name ?? "Unknown",
+                            collateralSymbol: loan.moreInfo.collateral?.collection?.symbol ?? "Unknown",
+                            collateralAmount: collateralAmount,
+                            appraisal: appraisal,
+                            borrowAmount: borrowAmount,
+                            borrowLoanName: loan.moreInfo.desired_asset?.name ?? "Unknown",
+                            borrowLoanSymbol: loan.moreInfo.desired_asset?.symbol ?? "Unknown",
+                            ltv: parseFloat(ltv),
+                            duration: parseFloat(duration.toFixed(2)),
+                            borrower: loan.moreInfo.borrower_address ?? "",
+                        };
+                    })
+                );
+
+                const filteredLoans = address ? mappedData.filter((loan) => loan && loan.borrower.toLowerCase() === address.toLowerCase()) : mappedData;
+                setLoans(filteredLoans.filter(Boolean));
             } catch (error) {
                 console.error("Error fetching loans:", error);
             }
@@ -67,11 +106,24 @@ export const ActiveLoansRealComponent = ({ address }: ActiveLoansRealComponentPr
             <Table variant="simple">
                 <Thead>
                     <Tr>
-                        <Th onClick={() => sortLoans("loanID")}>Loan {sortConfig.key === "loanID" ? (sortConfig.direction === "ascending" ? "↓" : "↑") : ""}</Th>
-                        <Th onClick={() => sortLoans("collateralSymbol")}>Collateral {sortConfig.key === "collateralSymbol" ? (sortConfig.direction === "ascending" ? "↓" : "↑") : ""}</Th>
-                        <Th onClick={() => sortLoans("appraisal")}>Appraisal {sortConfig.key === "appraisal" ? (sortConfig.direction === "ascending" ? "↓" : "↑") : ""}</Th>
-                        <Th onClick={() => sortLoans("borrowAmount")}>Borrow {sortConfig.key === "borrowAmount" ? (sortConfig.direction === "ascending" ? "↓" : "↑") : ""}</Th>
-                        <Th></Th>
+                        <Th cursor="pointer" onClick={() => sortLoans("loanID")}>
+                            Loan {sortConfig.key === "loanID" ? (sortConfig.direction === "ascending" ? "↓" : "↑") : ""}
+                        </Th>
+                        <Th cursor="pointer" onClick={() => sortLoans("collateralSymbol")}>
+                            Collateral {sortConfig.key === "collateralSymbol" ? (sortConfig.direction === "ascending" ? "↓" : "↑") : ""}
+                        </Th>
+                        <Th cursor="pointer" onClick={() => sortLoans("appraisal")}>
+                            Appraisal {sortConfig.key === "appraisal" ? (sortConfig.direction === "ascending" ? "↓" : "↑") : ""}
+                        </Th>
+                        <Th cursor="pointer" onClick={() => sortLoans("borrowAmount")}>
+                            Borrow {sortConfig.key === "borrowAmount" ? (sortConfig.direction === "ascending" ? "↓" : "↑") : ""}
+                        </Th>
+                        <Th cursor="pointer" onClick={() => sortLoans("ltv")}>
+                            LTV {sortConfig.key === "ltv" ? (sortConfig.direction === "ascending" ? "↓" : "↑") : ""}
+                        </Th>
+                        <Th cursor="pointer" onClick={() => sortLoans("duration")}>
+                            Duration {sortConfig.key === "duration" ? (sortConfig.direction === "ascending" ? "↓" : "↑") : ""}
+                        </Th>
                     </Tr>
                 </Thead>
                 <Tbody>
@@ -82,18 +134,23 @@ export const ActiveLoansRealComponent = ({ address }: ActiveLoansRealComponentPr
                             </Td>
                             <Td>
                                 <Flex align="center">
-                                    <Text>{loan.collateralSymbol}</Text>
+                                    <Image boxSize="60px" src={loan.collateralImage} alt="Collateral" mr={3} />
+                                    {loan.collateralSymbol} <br />({loan.collateralAmount.toFixed(2)})
                                 </Flex>
                             </Td>
                             <Td>{loan.appraisal.toFixed(2)} $</Td>
-                            <Td>{loan.borrowAmount.toFixed(2)}</Td>
-                            <Td isNumeric>
+                            <Td>
+                                {loan.borrowAmount.toFixed(2)} {loan.borrowLoanSymbol}
+                            </Td>
+                            <Td>{loan.ltv}%</Td>
+                            <Td>{loan.duration} days</Td>
+                            {/* <Td isNumeric>
                                 <Link href={`/fundLoan/${loan.loanID}`}>
                                     <Button colorScheme="teal" size="md">
                                         Loan Details
                                     </Button>
                                 </Link>
-                            </Td>
+                            </Td> */}
                         </Tr>
                     ))}
                 </Tbody>
