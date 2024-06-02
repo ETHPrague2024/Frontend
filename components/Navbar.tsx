@@ -6,7 +6,6 @@ import { useAccount } from "wagmi";
 
 export const Navbar = () => {
     const { address } = useAccount();
-    if (!address) return;
     return (
         <Box bg="brand.900" px={4}>
             <Flex h={20} alignItems={"center"} justifyContent={"space-between"}>
@@ -15,7 +14,7 @@ export const Navbar = () => {
                         <Image src="/logo.png" alt="Logo" width={200} height={70} />
                     </Link>
                 </Stack>
-                <Stack direction={"row"} alignItems={"center"} spacing={4}>
+                <Stack direction={"row"} alignItems={"center"} spacing={10}>
                     <Link href="/" color="white" fontSize="2xl" _hover={{ color: "teal.500", textDecoration: "underline" }}>
                         Requested Loans
                     </Link>
