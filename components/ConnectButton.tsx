@@ -1,5 +1,5 @@
 // @see https://www.rainbowkit.com/docs/custom-connect-button
-import { Button, Box } from "@chakra-ui/react";
+import { Button, Box, Avatar } from "@chakra-ui/react";
 import { ConnectButton as ConnectButtonRK } from "@rainbow-me/rainbowkit";
 import Image from "next/image";
 
@@ -72,7 +72,7 @@ export const ConnectButton = () => {
                                         onClick={openAccountModal}
                                     >
                                         <Box borderRadius="full" mr={2} overflow="hidden">
-                                            <Image alt="ENS Avatar" width={28} height={28} src={account.ensAvatar as string}></Image>
+                                            {account.ensAvatar ? <Image alt="ENS Avatar" width={28} height={28} src={account.ensAvatar} /> : <Avatar name={account.displayName} size="xs" />}
                                         </Box>
                                         {account.displayName}
                                     </Button>
