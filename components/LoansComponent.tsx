@@ -20,8 +20,8 @@ interface LoanDisplay {
     ltv: number;
     duration: number;
     network: string;
-    borrower: string; // Added borrower field
-    pd: number; // Added PD field
+    borrower: string;
+    pd: number;
 }
 
 type SortConfig = {
@@ -30,56 +30,52 @@ type SortConfig = {
 };
 
 interface LoansComponentProps {
-    address?: string; // Added address prop
+    address?: string;
 }
 
-export const LoansComponent = ({ address }: LoansComponentProps) => {
+export const LoansComponent: React.FC<LoansComponentProps> = ({ address }) => {
     const [loans, setLoans] = useState<LoanDisplay[]>([]);
     const [sortConfig, setSortConfig] = useState<SortConfig>({ key: "loanID", direction: "ascending" });
 
     useEffect(() => {
         const fetchLoans = async () => {
-            const [loansResponse, pdResponse] = await Promise.all([
-                fetch("/api/processLoans"),
-                fetch("/api/calculatedPD")
-            ]);
+            const [loansResponse, pdResponse] = await Promise.all([fetch("/api/processLoans"), fetch("/api/calculatedPD")]);
             const loansData = await loansResponse.json();
             const pdData = await pdResponse.json();
 
-            const pdMap = pdData.reduce((map, pdItem) => {
+            const pdMap: { [key: number]: number } = pdData.reduce((map: { [key: number]: number }, pdItem: { loanID: number; pd: number }) => {
                 map[pdItem.loanID] = pdItem.pd;
                 return map;
             }, {});
 
             const filteredData = loansData.filter((loan: any) => loan.type === "NewLoanAdvertised");
 
-            const mappedData = filteredData.map(async (loan: any) => {
-                const dateFromBlock = await getDateFromBlockNumber(loan.blockNumber);
-                const networkName = await getNetworkName(loan.chainIdLoan.toString());
-                return {
-                    loanID: loan.loanID,
-                    creationDate: formatDate(dateFromBlock as Date),
-                    collateralImage: loan.collateralDetails?.thumbnail_url || "",
-                    collateralName: loan.collateralDetails?.name || "Unknown",
-                    collateralSymbol: loan.collateralDetails?.symbol || "Unknown",
-                    collateralAmount: loan.tokenCollateralAmount / Math.pow(10, loan.collateralDetails?.decimals || 18),
-                    appraisal: Math.random() * 1000 + loan.tokenCollateralAmount / Math.pow(10, loan.collateralDetails?.decimals || 18), // Random appraisal
-                    borrowAmount: loan.tokenLoanAmount / Math.pow(10, loan.collateralDetails?.decimals || 18),
-                    borrowLoanName: loan.loanDetails?.name || "Unknown",
-                    borrowLoanSymbol: loan.loanDetails?.symbol || "Unknown",
-                    apr: 5, // Placeholder APR
-                    ltv: 70, // Placeholder LTV
-                    duration: (loan.durationOfLoanSeconds / 86400).toFixed(),
-                    network: networkName,
-                    borrower: loan.borrower, // Added borrower field
-                    pd: pdMap[loan.loanID] || 0 // Added PD field
-                };
-            });
+            const mappedData = await Promise.all(
+                filteredData.map(async (loan: any) => {
+                    const dateFromBlock = await getDateFromBlockNumber(loan.blockNumber);
+                    const networkName = await getNetworkName(loan.chainIdLoan.toString());
+                    return {
+                        loanID: loan.loanID,
+                        creationDate: formatDate(dateFromBlock as Date),
+                        collateralImage: loan.collateralDetails?.thumbnail_url || "",
+                        collateralName: loan.collateralDetails?.name || "Unknown",
+                        collateralSymbol: loan.collateralDetails?.symbol || "Unknown",
+                        collateralAmount: loan.tokenCollateralAmount / Math.pow(10, loan.collateralDetails?.decimals || 18),
+                        appraisal: Math.random() * 1000 + loan.tokenCollateralAmount / Math.pow(10, loan.collateralDetails?.decimals || 18),
+                        borrowAmount: loan.tokenLoanAmount / Math.pow(10, loan.collateralDetails?.decimals || 18),
+                        borrowLoanName: loan.loanDetails?.name || "Unknown",
+                        borrowLoanSymbol: loan.loanDetails?.symbol || "Unknown",
+                        apr: 5,
+                        ltv: 70,
+                        duration: (loan.durationOfLoanSeconds / 86400).toFixed(),
+                        network: networkName,
+                        borrower: loan.borrowerAddress,
+                        pd: pdMap[loan.loanID] || 0,
+                    };
+                })
+            );
 
-            const loansDataWithPD = await Promise.all(mappedData);
-
-            // Apply address filter if address prop is provided
-            const filteredLoans = address ? loansDataWithPD.filter((loan) => loan.borrower.toLowerCase() === address.toLowerCase()) : loansDataWithPD;
+            const filteredLoans = address ? mappedData.filter((loan) => loan.borrower.toLowerCase() === address.toLowerCase()) : mappedData;
             setLoans(filteredLoans);
         };
         fetchLoans();
@@ -108,15 +104,33 @@ export const LoansComponent = ({ address }: LoansComponentProps) => {
             <Table variant="simple">
                 <Thead>
                     <Tr>
-                        <Th onClick={() => sortLoans("loanID")}>Loan {sortConfig.key === "loanID" ? (sortConfig.direction === "ascending" ? "↓" : "↑") : ""}</Th>
-                        <Th onClick={() => sortLoans("collateralSymbol")}>Collateral {sortConfig.key === "collateralSymbol" ? (sortConfig.direction === "ascending" ? "↓" : "↑") : ""}</Th>
-                        <Th onClick={() => sortLoans("appraisal")}>Appraisal {sortConfig.key === "appraisal" ? (sortConfig.direction === "ascending" ? "↓" : "↑") : ""}</Th>
-                        <Th onClick={() => sortLoans("borrowAmount")}>Borrow {sortConfig.key === "borrowAmount" ? (sortConfig.direction === "ascending" ? "↓" : "↑") : ""}</Th>
-                        <Th onClick={() => sortLoans("apr")}>APR {sortConfig.key === "apr" ? (sortConfig.direction === "ascending" ? "↓" : "↑") : ""}</Th>
-                        <Th onClick={() => sortLoans("ltv")}>LTV {sortConfig.key === "ltv" ? (sortConfig.direction === "ascending" ? "↓" : "↑") : ""}</Th>
-                        <Th onClick={() => sortLoans("duration")}>Duration {sortConfig.key === "duration" ? (sortConfig.direction === "ascending" ? "↓" : "↑") : ""}</Th>
-                        <Th onClick={() => sortLoans("network")}>Network {sortConfig.key === "network" ? (sortConfig.direction === "ascending" ? "↓" : "↑") : ""}</Th>
-                        <Th onClick={() => sortLoans("pd")}>PD {sortConfig.key === "pd" ? (sortConfig.direction === "ascending" ? "↓" : "↑") : ""}</Th>
+                        <Th cursor="pointer" onClick={() => sortLoans("loanID")}>
+                            Loan {sortConfig.key === "loanID" ? (sortConfig.direction === "ascending" ? "↓" : "↑") : ""}
+                        </Th>
+                        <Th cursor="pointer" onClick={() => sortLoans("collateralSymbol")}>
+                            Collateral {sortConfig.key === "collateralSymbol" ? (sortConfig.direction === "ascending" ? "↓" : "↑") : ""}
+                        </Th>
+                        <Th cursor="pointer" onClick={() => sortLoans("appraisal")}>
+                            Appraisal {sortConfig.key === "appraisal" ? (sortConfig.direction === "ascending" ? "↓" : "↑") : ""}
+                        </Th>
+                        <Th cursor="pointer" onClick={() => sortLoans("borrowAmount")}>
+                            Borrow {sortConfig.key === "borrowAmount" ? (sortConfig.direction === "ascending" ? "↓" : "↑") : ""}
+                        </Th>
+                        <Th cursor="pointer" onClick={() => sortLoans("apr")}>
+                            APR {sortConfig.key === "apr" ? (sortConfig.direction === "ascending" ? "↓" : "↑") : ""}
+                        </Th>
+                        <Th cursor="pointer" onClick={() => sortLoans("ltv")}>
+                            LTV {sortConfig.key === "ltv" ? (sortConfig.direction === "ascending" ? "↓" : "↑") : ""}
+                        </Th>
+                        <Th cursor="pointer" onClick={() => sortLoans("pd")}>
+                            PD {sortConfig.key === "pd" ? (sortConfig.direction === "ascending" ? "↓" : "↑") : ""}
+                        </Th>
+                        <Th cursor="pointer" onClick={() => sortLoans("duration")}>
+                            Duration {sortConfig.key === "duration" ? (sortConfig.direction === "ascending" ? "↓" : "↑") : ""}
+                        </Th>
+                        <Th cursor="pointer" onClick={() => sortLoans("network")}>
+                            Network {sortConfig.key === "network" ? (sortConfig.direction === "ascending" ? "↓" : "↑") : ""}
+                        </Th>
                         <Th></Th>
                     </Tr>
                 </Thead>
@@ -141,9 +155,9 @@ export const LoansComponent = ({ address }: LoansComponentProps) => {
                             </Td>
                             <Td>{loan.apr}%</Td>
                             <Td>{loan.ltv}%</Td>
+                            <Td>{loan.pd.toFixed(2)}%</Td>
                             <Td>{loan.duration} days</Td>
                             <Td>{loan.network}</Td>
-                            <Td>{loan.pd.toFixed(2)}%</Td>
                             <Td isNumeric>
                                 <Link href={`/fundLoan/${loan.loanID}`}>
                                     <Button colorScheme="teal" size="md">
