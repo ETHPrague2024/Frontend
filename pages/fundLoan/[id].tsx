@@ -56,7 +56,12 @@ const LoanDetails: NextPage = () => {
         async function fetchNetworkName() {
             if (loanDetails) {
                 const networkName = await getNetworkName(loanDetails.chainIdLoan);
-                setNetworkName(networkName);
+                if (networkName) {
+                    const networkNameUpperCase = networkName.charAt(0).toUpperCase() + networkName.slice(1);
+                    setNetworkName(networkNameUpperCase);
+                } else {
+                    setNetworkName(networkName || "Unknown");
+                }
             }
         }
 
